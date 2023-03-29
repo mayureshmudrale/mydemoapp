@@ -23,11 +23,16 @@ resource "aws_ecs_service" "service_test"{
     
 }
 
+variable "image_tag" {
+  description = "Docker image tag"
+  default     = "latest"
+}
+
 resource "aws_ecs_task_definition" "tdv3" {
     container_definitions = jsonencode([
         {
             name = "appv3"
-            image = "526222256299.dkr.ecr.ap-south-1.amazonaws.com/docker-nodejs-demo"
+            image = "526222256299.dkr.ecr.ap-south-1.amazonaws.com/docker-nodejs-demo:${var.image_tag}"
             cpu = 256
             memory = 512 
             essential = true
