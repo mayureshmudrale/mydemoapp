@@ -57,11 +57,13 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+        
         with:
           terraform_version: 1.0.6
           terraform_command: 'apply -auto-approve'
           vars: |
            image_tag = ${{ github.sha }}
+          working-directory: ./
           
            
       
