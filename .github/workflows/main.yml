@@ -44,6 +44,12 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
         run: |
           terraform apply -auto-approve
+          
+      - name: Download task definition
+        run: aws ecs describe-task-definition --task-definition appv3 > task-definition.json
+
+      - name: Display task definition
+        run: cat task-definition.json
 
       - name: Wait for 1 minutes
         run: sleep 60
