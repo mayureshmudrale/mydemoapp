@@ -53,17 +53,12 @@ jobs:
         run: terraform init
         
       - name: Terraform Apply
-        uses: hashicorp/terraform-github-actions@v0.1.4
+        id: terraform
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
-        
-        with:
-          terraform_version: 1.0.6
-          terraform_command: 'apply -auto-approve'
-          vars: |
-           image_tag = ${{ github.sha }}
-          working-directory: .
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
+        run: |
+          terraform apply -auto-approve -var image_tag=${{ github.sha }}
           
            
       
