@@ -5,9 +5,9 @@ on:
       - master
 env:
   AWS_REGION: ap-south-1
-  ECS_CLUSTER: app_cluster_3
-  CONTAINER_NAME: app_3
-  ECS_SERVICE: app_service_3
+  ECS_CLUSTER: app_cluster_test
+  CONTAINER_NAME: appv3
+  ECS_SERVICE: service_test
   #ECS_TD: .github/workflows/td.json
 
 jobs:
