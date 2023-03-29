@@ -63,7 +63,7 @@ jobs:
           terraform_command: 'apply -auto-approve'
           vars: |
            image_tag = ${{ github.sha }}
-          working-directory: ./
+          working-directory: .
           
            
       
