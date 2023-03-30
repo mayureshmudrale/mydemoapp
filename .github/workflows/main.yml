@@ -59,7 +59,33 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
         run: |
           terraform apply -auto-approve -var image_tag=${{ github.sha }}
-          
+      - name: Deploy to ECS
+        run: |
+          # Download the current task definition in JSON format
+          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition appv3)
+
+          # Extract the container definitions from the task definition JSON
+          CONTAINER_DEFINITIONS=$(echo $TASK_DEFINITION | jq -r '.taskDefinition.containerDefinitions')
+
+          # Replace the image tag in each container definition with the latest image tag
+          LATEST_IMAGE_TAG=$(echo $IMAGE_TAG)
+          UPDATED_CONTAINER_DEFINITIONS=$(echo $CONTAINER_DEFINITIONS | jq --arg LATEST_IMAGE_TAG $LATEST_IMAGE_TAG '.[].image |= sub(":.*"; ":" + $LATEST_IMAGE_TAG)')
+
+          # Update the task definition with the new container definitions
+          UPDATED_TASK_DEFINITION=$(echo $TASK_DEFINITION | jq --argjson UPDATED_CONTAINER_DEFINITIONS "$UPDATED_CONTAINER_DEFINITIONS" '.taskDefinition.containerDefinitions |= $UPDATED_CONTAINER_DEFINITIONS')
+
+          # Register the updated task definition with ECS
+          REGISTER_RESPONSE=$(aws ecs register-task-definition --cli-input-json "$UPDATED_TASK_DEFINITION")
+          NEW_TASK_DEFINITION_ARN=$(echo $REGISTER_RESPONSE | jq -r '.taskDefinition.taskDefinitionArn')
+
+          # Update the ECS service to use the new task definition
+          aws ecs update-service --service $SERVICE_NAME --task-definition $NEW_TASK_DEFINITION_ARN
+          env:
+            TASK_DEFINITION_NAME: my-task-definition
+            SERVICE_NAME: app_service_test
+            IMAGE_TAG: ${{ github.sha }}
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_KEY_SECRET }}
            
       
       - name: Wait for 3 minutes
