@@ -81,7 +81,7 @@ jobs:
           # Update the ECS service to use the new task definition
           aws ecs update-service --service $SERVICE_NAME --task-definition $NEW_TASK_DEFINITION_ARN
           env:
-            TASK_DEFINITION_NAME: my-task-definition
+            TASK_DEFINITION_NAME: appv3
             SERVICE_NAME: app_service_test
             IMAGE_TAG: ${{ github.sha }}
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
